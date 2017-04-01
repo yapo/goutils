@@ -24,8 +24,8 @@ type ErrorType struct {
 	Message string
 }
 
-// WriteHTTPResponse write to te response stream
-func WriteHTTPResponse(w http.ResponseWriter, response *Response) {
+// WriteJSONResponse write to te response stream
+func WriteJSONResponse(w http.ResponseWriter, response *Response) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.Code)
 	fmt.Fprintf(w, "%s", response.Body)

@@ -26,7 +26,7 @@ func StringValidator(param interface{}) (bool, string) {
 	return true, ""
 }
 
-// EmptyStringValidator checks that param is a string
+// EmptyStringValidator checks that param is not an empty string
 func EmptyStringValidator(param interface{}) (bool, string) {
 	if param.(string) == "" {
 		return false, "can not be an empty string"
@@ -53,10 +53,11 @@ func EmailValidator(param interface{}) (bool, string) {
 }
 
 // ValidateDate Check if date YYYY-mm-dd is valid
-func ValidateDate(date string) bool {
+func ValidateDate(param interface{}) (bool, string) {
+	date := param.(string)
 	_, e := time.Parse(time.RFC3339, date+"T00:00:00Z")
 	if e != nil {
-		return false
+		return false, "are not a date"
 	}
-	return true
+	return true, ""
 }

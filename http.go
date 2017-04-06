@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/Yapo/goutils/commonErrors"
 	"github.com/Yapo/logger"
 	"io/ioutil"
 	"net/http"
@@ -70,46 +69,46 @@ func GetParamsFromRequest(
 
 	jsonValues := make(map[string]interface{})
 
-	if req.Method == "GET" {
-		logger.Debug("GET params were:%+v", req.URL.Query())
-		for _, value := range dataValues {
-			param := req.URL.Query().Get(value)
-			if param != "" {
-				if v, err := strconv.Atoi(param); err == nil {
-					jsonValues[value] = v
-					logger.Debug("%s %T were:%d", value, v, v)
-				} else {
-					jsonValues[value] = param
-					logger.Debug("%s %T were:%s", value, param, param)
-				}
-			} else {
-				if defaultValues[value] != nil {
-					jsonValues[value] = defaultValues[value]
-				}
-			}
-		}
-	} else {
+	if req.Method != "GET" {
 		rawBody, _ := ioutil.ReadAll(req.Body)
 		req.Body = ioutil.NopCloser(bytes.NewBuffer(rawBody))
 		logger.Debug("%s params were:%+v", req.Method, req.Body)
 		err := json.Unmarshal(rawBody, &jsonValues)
 		if err != nil {
-			resp.Code = commonErrors.CodeMalformedRequest
-			resp.Body = commonErrors.GenericError{ErrorMessage: commonErrors.MsgMalformedRequest}
+			resp.Code = CodeMalformedRequest
+			resp.Body = GenericError{ErrorMessage: MsgMalformedRequest}
 			return jsonValues, true
+		}
+	}
+
+	logger.Debug("GET params were:%+v", req.URL.Query())
+	for _, value := range dataValues {
+		param := req.URL.Query().Get(value)
+		if param != "" {
+			if v, err := strconv.Atoi(param); err == nil {
+				jsonValues[value] = v
+				logger.Debug("%s %T were:%d", value, v, v)
+			} else {
+				jsonValues[value] = param
+				logger.Debug("%s %T were:%s", value, param, param)
+			}
+		} else {
+			if defaultValues[value] != nil {
+				jsonValues[value] = defaultValues[value]
+			}
 		}
 	}
 	for _, value := range dataValues {
 		if jsonValues[value] == nil {
-			resp.Code = commonErrors.CodeMissingParam
-			resp.Body = commonErrors.GenericError{ErrorMessage: fmt.Sprintf(commonErrors.MsgMissingParam, value)}
+			resp.Code = CodeMissingParam
+			resp.Body = GenericError{ErrorMessage: fmt.Sprintf(MsgMissingParam, value)}
 			return jsonValues, true
 		}
 		if vals, ok := validators[value]; ok {
 			for _, val := range vals {
 				if vok, verrmsg := val(jsonValues[value]); !vok {
-					resp.Code = commonErrors.CodeBadParam
-					resp.Body = commonErrors.GenericError{ErrorMessage: fmt.Sprintf(commonErrors.MsgBadParam, value+" "+verrmsg)}
+					resp.Code = CodeBadParam
+					resp.Body = GenericError{ErrorMessage: fmt.Sprintf(MsgBadParam, value+" "+verrmsg)}
 					return jsonValues, true
 				}
 			}

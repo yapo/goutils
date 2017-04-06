@@ -1,11 +1,8 @@
-package commonErrors
+package goutils
 
 type GenericError struct {
 	ErrorMessage string
 }
-
-const ResponseOK = "OK"
-const ResponseNOK = "NOK"
 
 // USER ERRORS
 const (

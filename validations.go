@@ -38,7 +38,7 @@ func EmptyStringValidator(param interface{}) (bool, string) {
 func PlatesValidator(param interface{}) (bool, string) {
 	var regexValidator = regexp.MustCompile("^[A-Za-z]{2}([A-Za-z]{1,2}|[0-9]{1,2})[0-9]{2}$")
 	if !regexValidator.MatchString(param.(string)) {
-		return false, "are not in the required format"
+		return false, "is not in the required format"
 	}
 	return true, ""
 }
@@ -47,7 +47,7 @@ func PlatesValidator(param interface{}) (bool, string) {
 func EmailValidator(param interface{}) (bool, string) {
 	var regexValidator = regexp.MustCompile("^[^@]+@[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)+$")
 	if !regexValidator.MatchString(param.(string)) {
-		return false, "are not in the required format"
+		return false, "is not in the required format"
 	}
 	return true, ""
 }
@@ -57,7 +57,7 @@ func ValidateDate(param interface{}) (bool, string) {
 	date := param.(string)
 	_, e := time.Parse(time.RFC3339, date+"T00:00:00Z")
 	if e != nil {
-		return false, "are not a date"
+		return false, "is not a date"
 	}
 	return true, ""
 }

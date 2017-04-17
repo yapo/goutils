@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Response is a struct to generate a response from POST/PUT requests
@@ -43,13 +44,17 @@ func CreateJSON(response *Response) {
 }
 
 // SendHTTPRequest does that
-func SendHTTPRequest(url, endpoint, method, query, body string, headers map[string]string, errors ErrorType) (int, string) {
+func SendHTTPRequest(url, endpoint, method, query, body string, headers map[string]string, timeout int, errors ErrorType) (int, string) {
 	req, _ := http.NewRequest(method, url+endpoint+query, strings.NewReader(body))
 	for key, value := range headers {
 		req.Header.Add(key, value)
 	}
 	logger.Debug("sending HTTP request: %+v", req)
-	resp, err := http.DefaultClient.Do(req)
+	// this makes a custom http client with a timeout in secs for each request
+	var httpClient = &http.Client{
+		Timeout: time.Second * time.Duration(timeout),
+	}
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		logger.Error("sending HTTP request: %+v", err)
 		return errors.Code, fmt.Sprintf(errors.Message, err)

@@ -44,15 +44,15 @@ func CreateJSON(response *Response) {
 }
 
 // SendHTTPRequest does that
-func SendHTTPRequest(url, endpoint, method, query, body string, headers map[string]string, errors ErrorType) (int, string) {
+func SendHTTPRequest(url, endpoint, method, query, body string, headers map[string]string, timeout int, errors ErrorType) (int, string) {
 	req, _ := http.NewRequest(method, url+endpoint+query, strings.NewReader(body))
 	for key, value := range headers {
 		req.Header.Add(key, value)
 	}
 	logger.Debug("sending HTTP request: %+v", req)
-	// this makes a custom http client with a timeout of 10 secs for each request
+	// this makes a custom http client with a timeout in secs for each request
 	var httpClient = &http.Client{
-		Timeout: time.Second * 10,
+		Timeout: time.Second * time.Duration(timeout),
 	}
 	resp, err := httpClient.Do(req)
 	if err != nil {

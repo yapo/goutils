@@ -36,7 +36,7 @@ func EmptyStringValidator(param interface{}) (bool, string) {
 
 // PlatesValidator checks that param is formated correctly as a car plate
 func PlatesValidator(param interface{}) (bool, string) {
-	var regexValidator = regexp.MustCompile("^[A-Za-z]{2}([A-Za-z]{1,2}|[0-9]{1,2})[0-9]{2}$")
+	var regexValidator = regexp.MustCompile("^[A-Za-z]{2}([A-Za-z]{1,2}0?|[0-9]{1,2})[0-9]{2}$")
 	if !regexValidator.MatchString(param.(string)) {
 		return false, "is not in the required format"
 	}

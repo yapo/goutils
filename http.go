@@ -43,6 +43,22 @@ func CreateJSON(response *Response) {
 	response.Body = jsonResponse
 }
 
+// ParseJSONBody
+func ParseJSONBody(r *http.Request, input interface{}) *Response {
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(input)
+	r.Body.Close()
+	if err != nil {
+		return &Response{
+			Code: http.StatusBadRequest,
+			Body: GenericError{
+				ErrorMessage: err.Error(),
+			},
+		}
+	}
+	return nil
+}
+
 // SendHTTPRequest does that
 func SendHTTPRequest(url, endpoint, method, query, body string, headers map[string]string, timeout int, errors ErrorType) (int, string) {
 	req, _ := http.NewRequest(method, url+endpoint+query, strings.NewReader(body))

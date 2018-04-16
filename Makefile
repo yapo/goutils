@@ -1,6 +1,6 @@
 
 test: setup
-	go test -cover -coverprofile=cover.out
+	go test -coverprofile=cover.out -covermode=count
 
 cover: test
 	go tool cover -html=cover.out

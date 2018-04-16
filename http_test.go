@@ -2,14 +2,61 @@ package goutils
 
 import (
 	"gopkg.in/stretchr/testify.v1/assert"
+	"math"
+	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 )
 
 type TestStruct struct {
-	A int    `json:"le_a"`
-	B string `json:"le_b"`
+	A float64 `json:"le_a"`
+	B string  `json:"le_b"`
+}
+
+func TestWriteJSONResponseString(t *testing.T) {
+	response := Response{
+		Code: 42,
+		Body: "Don't panic",
+	}
+	expected := `Don't panic`
+	w := httptest.NewRecorder()
+	WriteJSONResponse(w, &response)
+	assert.Equal(t, expected, w.Body.String())
+}
+
+func TestWriteJSONResponseStruct(t *testing.T) {
+	response := Response{
+		Code: 42,
+		Body: TestStruct{
+			A: 314159,
+			B: "Pi day",
+		},
+	}
+	expected := `{"le_a":314159,"le_b":"Pi day"}`
+	w := httptest.NewRecorder()
+	CreateJSON(&response)
+	WriteJSONResponse(w, &response)
+	assert.Equal(t, expected, w.Body.String())
+}
+
+func TestWriteJSONResponseError(t *testing.T) {
+	response := Response{
+		Code: 42,
+		Body: TestStruct{
+			A: math.Inf(1),
+			B: "And beyond!",
+		},
+	}
+	expected := Response{
+		Code: http.StatusInternalServerError,
+		Body: "",
+	}
+	w := httptest.NewRecorder()
+	CreateJSON(&response)
+	WriteJSONResponse(w, &response)
+	assert.Equal(t, expected, response)
+	//assert.Equal(t, expected, w.Body.String())
 }
 
 func TestParseJSONBodyOK(t *testing.T) {

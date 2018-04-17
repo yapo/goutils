@@ -19,10 +19,18 @@ func TestWriteJSONResponseString(t *testing.T) {
 		Code: 42,
 		Body: "Don't panic",
 	}
-	expected := `Don't panic`
+	expectedCode := 42
+	expectedHeader := http.Header{
+		"Content-Type": {"application/json"},
+	}
+	expectedBody := `Don't panic`
+
 	w := httptest.NewRecorder()
 	WriteJSONResponse(w, &response)
-	assert.Equal(t, expected, w.Body.String())
+
+	assert.Equal(t, expectedCode, w.Code)
+	assert.Equal(t, expectedHeader, w.Header())
+	assert.Equal(t, expectedBody, w.Body.String())
 }
 
 func TestWriteJSONResponseStruct(t *testing.T) {
@@ -34,9 +42,11 @@ func TestWriteJSONResponseStruct(t *testing.T) {
 		},
 	}
 	expected := `{"le_a":314159,"le_b":"Pi day"}`
+
 	w := httptest.NewRecorder()
 	CreateJSON(&response)
 	WriteJSONResponse(w, &response)
+
 	assert.Equal(t, expected, w.Body.String())
 }
 
@@ -52,11 +62,16 @@ func TestWriteJSONResponseError(t *testing.T) {
 		Code: http.StatusInternalServerError,
 		Body: "",
 	}
+	expectedCode := http.StatusInternalServerError
+	expectedBody := ""
+
 	w := httptest.NewRecorder()
 	CreateJSON(&response)
 	WriteJSONResponse(w, &response)
+
 	assert.Equal(t, expected, response)
-	//assert.Equal(t, expected, w.Body.String())
+	assert.Equal(t, expectedCode, w.Code)
+	assert.Equal(t, expectedBody, w.Body.String())
 }
 
 func TestParseJSONBodyOK(t *testing.T) {

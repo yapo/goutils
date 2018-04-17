@@ -1,6 +1,6 @@
 
 test: setup
-	go test -coverprofile=cover.out -covermode=count
+	go test -race -coverprofile=cover.out -covermode=atomic
 
 cover: test
 	go tool cover -html=cover.out

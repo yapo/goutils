@@ -50,6 +50,24 @@ func TestWriteJSONResponseStruct(t *testing.T) {
 	assert.Equal(t, expected, w.Body.String())
 }
 
+func TestWriteJSONResponseStructWithSpecialChars(t *testing.T) {
+	response := Response{
+		Code: 42,
+		Body: TestStruct{
+			A: 314159,
+			B: "Pi day <&> Omega night",
+		},
+	}
+	// the &, <, > char should remain a &, <, > after json encoder
+	expected := `{"le_a":314159,"le_b":"Pi day <&> Omega night"}` + "\n"
+
+	w := httptest.NewRecorder()
+	CreateJSON(&response)
+	WriteJSONResponse(w, &response)
+
+	assert.Equal(t, expected, w.Body.String())
+}
+
 func TestWriteJSONResponseError(t *testing.T) {
 	response := Response{
 		Code: 42,

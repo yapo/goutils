@@ -31,7 +31,7 @@ func WriteJSONResponse(w http.ResponseWriter, response *Response) {
 	fmt.Fprintf(w, "%s", response.Body)
 }
 
-// CreateJSON convert Body to json format
+// CreateJSON converts response.Body to json format
 func CreateJSON(response *Response) {
 	body := new(bytes.Buffer)
 	encoder := json.NewEncoder(body)

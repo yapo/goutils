@@ -31,16 +31,20 @@ func WriteJSONResponse(w http.ResponseWriter, response *Response) {
 	fmt.Fprintf(w, "%s", response.Body)
 }
 
-// CreateJSON convert Body to json format
+// CreateJSON converts response.Body to json format
 func CreateJSON(response *Response) {
-	jsonResponse, err := json.Marshal(response.Body)
+	body := new(bytes.Buffer)
+	encoder := json.NewEncoder(body)
+	encoder.SetEscapeHTML(false)
+	err := encoder.Encode(response.Body)
+
 	if err != nil {
 		logger.Info("CAN'T ENCODE \"%+v\" TO JSON", response.Body)
 		response.Body = ""
 		response.Code = http.StatusInternalServerError
 		return
 	}
-	response.Body = jsonResponse
+	response.Body = body
 }
 
 // ParseJSONBody

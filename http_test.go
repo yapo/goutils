@@ -41,7 +41,7 @@ func TestWriteJSONResponseStruct(t *testing.T) {
 			B: "Pi day",
 		},
 	}
-	expected := "{\"le_a\":314159,\"le_b\":\"Pi day\"}\n"
+	expected := `{"le_a":314159,"le_b":"Pi day"}` + "\n"
 
 	w := httptest.NewRecorder()
 	CreateJSON(&response)

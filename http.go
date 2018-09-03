@@ -14,8 +14,9 @@ import (
 
 // Response is a struct to generate a response from POST/PUT requests
 type Response struct {
-	Code int
-	Body interface{}
+	Code    int
+	Body    interface{}
+	Headers map[string]string
 }
 
 // ErrorType allow have common error on diferent projects
@@ -27,6 +28,9 @@ type ErrorType struct {
 // WriteJSONResponse write to te response stream
 func WriteJSONResponse(w http.ResponseWriter, response *Response) {
 	w.Header().Set("Content-Type", "application/json")
+	for header, value := range response.Headers {
+		w.Header().Set(header, value)
+	}
 	w.WriteHeader(response.Code)
 	fmt.Fprintf(w, "%s", response.Body)
 }

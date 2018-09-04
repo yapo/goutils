@@ -28,12 +28,13 @@ type ErrorType struct {
 
 // WriteJSONResponse write to te response stream
 func WriteJSONResponse(w http.ResponseWriter, response *Response) {
-	for header, values := range response.Headers {
-		for i := range values {
-			w.Header().Add(header, values[i])
+	header := w.Header()
+	for key, values := range response.Headers {
+		for _, value := range values {
+			header.Add(key, value)
 		}
 	}
-	w.Header().Set("Content-Type", "application/json")
+	header.Set("Content-Type", "application/json")
 	w.WriteHeader(response.Code)
 	fmt.Fprintf(w, "%s", response.Body)
 }

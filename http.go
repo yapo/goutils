@@ -4,15 +4,18 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/Yapo/logger"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Yapo/logger"
 )
 
-// Response is a struct to generate a response from POST/PUT requests
+// Response is a struct to generate a response from POST/PUT requests.
+// As described in http.set(), custom headers may be replaced for any other
+// header with the same name
 type Response struct {
 	Code    int
 	Body    interface{}
@@ -27,10 +30,10 @@ type ErrorType struct {
 
 // WriteJSONResponse write to te response stream
 func WriteJSONResponse(w http.ResponseWriter, response *Response) {
-	w.Header().Set("Content-Type", "application/json")
 	for header, value := range response.Headers {
 		w.Header().Set(header, value)
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.Code)
 	fmt.Fprintf(w, "%s", response.Body)
 }

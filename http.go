@@ -13,13 +13,11 @@ import (
 	"github.com/Yapo/logger"
 )
 
-// Response is a struct to generate a response from POST/PUT requests.
-// As described in http.set(), custom headers may be replaced for any other
-// header with the same name
+// Response is a struct to generate a response from POST/PUT requests
 type Response struct {
 	Code    int
 	Body    interface{}
-	Headers map[string]string
+	Headers http.Header
 }
 
 // ErrorType allow have common error on diferent projects
@@ -30,8 +28,10 @@ type ErrorType struct {
 
 // WriteJSONResponse write to te response stream
 func WriteJSONResponse(w http.ResponseWriter, response *Response) {
-	for header, value := range response.Headers {
-		w.Header().Set(header, value)
+	for header, values := range response.Headers {
+		for i := range values {
+			w.Header().Add(header, values[i])
+		}
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.Code)

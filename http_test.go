@@ -71,14 +71,17 @@ func TestWriteJSONResponseStructWithSpecialChars(t *testing.T) {
 
 func TestWriteJSONResponseWithHeaders(t *testing.T) {
 	response := Response{
-		Code:    42,
-		Body:    "Don't panic",
-		Headers: map[string]string{"Custom": "header"},
+		Code: 42,
+		Body: "Don't panic",
+		Headers: http.Header{"Custom": {"header"},
+			"Multivalue": {"value1", "value2", "value3"},
+		},
 	}
 	expectedCode := 42
 	expectedHeader := http.Header{
 		"Content-Type": {"application/json"},
 		"Custom":       {"header"},
+		"Multivalue":   {"value1", "value2", "value3"},
 	}
 	expectedBody := `Don't panic`
 

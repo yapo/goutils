@@ -1,12 +1,13 @@
 package goutils
 
 import (
-	"gopkg.in/stretchr/testify.v1/assert"
 	"math"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"gopkg.in/stretchr/testify.v1/assert"
 )
 
 type TestStruct struct {
@@ -66,6 +67,30 @@ func TestWriteJSONResponseStructWithSpecialChars(t *testing.T) {
 	WriteJSONResponse(w, &response)
 
 	assert.Equal(t, expected, w.Body.String())
+}
+
+func TestWriteJSONResponseWithHeaders(t *testing.T) {
+	response := Response{
+		Code: 42,
+		Body: "Don't panic",
+		Headers: http.Header{"Custom": {"header"},
+			"Multivalue": {"value1", "value2", "value3"},
+		},
+	}
+	expectedCode := 42
+	expectedHeader := http.Header{
+		"Content-Type": {"application/json"},
+		"Custom":       {"header"},
+		"Multivalue":   {"value1", "value2", "value3"},
+	}
+	expectedBody := `Don't panic`
+
+	w := httptest.NewRecorder()
+	WriteJSONResponse(w, &response)
+
+	assert.Equal(t, expectedCode, w.Code)
+	assert.Equal(t, expectedHeader, w.Header())
+	assert.Equal(t, expectedBody, w.Body.String())
 }
 
 func TestWriteJSONResponseError(t *testing.T) {

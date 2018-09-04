@@ -4,18 +4,20 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/Yapo/logger"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Yapo/logger"
 )
 
 // Response is a struct to generate a response from POST/PUT requests
 type Response struct {
-	Code int
-	Body interface{}
+	Code    int
+	Body    interface{}
+	Headers http.Header
 }
 
 // ErrorType allow have common error on diferent projects
@@ -26,7 +28,13 @@ type ErrorType struct {
 
 // WriteJSONResponse write to te response stream
 func WriteJSONResponse(w http.ResponseWriter, response *Response) {
-	w.Header().Set("Content-Type", "application/json")
+	header := w.Header()
+	for key, values := range response.Headers {
+		for _, value := range values {
+			header.Add(key, value)
+		}
+	}
+	header.Set("Content-Type", "application/json")
 	w.WriteHeader(response.Code)
 	fmt.Fprintf(w, "%s", response.Body)
 }

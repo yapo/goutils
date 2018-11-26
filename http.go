@@ -29,9 +29,11 @@ type ErrorType struct {
 // WriteJSONResponse write to te response stream
 func WriteJSONResponse(w http.ResponseWriter, response *Response) {
 	header := w.Header()
-	for key, values := range response.Headers {
-		for _, value := range values {
-			header.Add(key, value)
+	if response != nil {
+		for key, values := range response.Headers {
+			for _, value := range values {
+				header.Add(key, value)
+			}
 		}
 	}
 	header.Set("Content-Type", "application/json")

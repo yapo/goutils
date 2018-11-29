@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -29,7 +30,7 @@ type ErrorType struct {
 // WriteJSONResponse write to te response stream
 func WriteJSONResponse(w http.ResponseWriter, response *Response) {
 	header := w.Header()
-	if response != nil {
+	if !reflect.ValueOf(response).IsNil() {
 		for key, values := range response.Headers {
 			for _, value := range values {
 				header.Add(key, value)
